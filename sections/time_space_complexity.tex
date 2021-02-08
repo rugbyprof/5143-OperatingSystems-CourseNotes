@@ -1,0 +1,603 @@
+\newpage
+\mysection{Complexity}
+
+Computational complexity theory focuses on classifying computational problems according to their resource usage, and relating these classes to each other. A computational problem is a task solved by a computer. A computation problem is solvable by mechanical application of mathematical steps, such as an algorithm\supcite{Computat1wiki}.\\
+
+What does this mean in human terms? It means that when we look at the complexity of an algorithm, we are analyzing that algorithm with tools that allow us to quantify the cost in a variety of ways. Mostly, it will let us categorize the algorithm in broad or if necessary, very specific terms. How exact of a classification will depend on the specific task being solved. Mostly as computer scientists we want to know: "Is this wasting space?" (aka Space Complexity), or "Is this running too many instructions?" (aka \gls{tcomplex}).  
+
+\mysubsection{Time complexity}
+
+In computer science, the time complexity is the computational complexity that describes the amount of computer time it takes to run an algorithm. Time complexity is commonly estimated by counting the number of elementary operations performed by the algorithm, supposing that each elementary operation takes a fixed amount of time to perform. Thus, the amount of time taken and the number of elementary operations performed by the algorithm are taken to differ by at most a constant factor\supcite{Timecomp}.\\
+
+In other words, as the size of the data we are working on grows, the \gls{tcomplex} of our code increases. Its a simple concept you need to look at \texttt{N} values in an array, the \gls{tcomplex} goes up as \texttt{N} does. However, instructions that do not depend on the size of the data do not get factored into the \gls{tcomplex}.
+These are the instructions that set up your program to begin processing or other instructions that consider "One Time Costs", meaning they get done once. I will discuss things like this again during lecture, but here's a simple example of instructions that depend on N and one time cost instructions:
+
+\begin{minted}[]{c++}
+	int main(int argc, char** argv) {
+		
+		int N = argv[1];            // get size from command line (cost 1)
+		int *array = new int[N]     // allocate memory (cost 1)
+		    
+		// print N random numbers
+		for(int i = 0; i < N; ++i){ 
+			cout<<rand()<<endl;        // Depends on N (cost N)
+		}
+		return 0;
+	}
+\end{minted}
+
+\mysubsubsection{Importance of Time Complexity}
+
+The bottom line is: we want our programs to be efficient. Yes, CPU's are fast. Most of our programs in academia are small, and finish before you can blink an eye. But you should still analyze your solutions to see if there are improvements that can be made. Even small speedups can add up over time. Let's not forget that understanding your computers architecture can also help speed up your codes performance. Search  \href{https://scholar.google.com/scholar?hl=en\&as_sdt=0\%2C44\&q=cache+size+sorting}{Google Scholar} with keywords "cache size sorting". The point is us computer scientists should have a more thought out approach to our solutions that will give us better \gls{tcomplex}.\\
+
+Let me set up a scenario. You have a data set of N = 1 million items. It is stored in a linked list and it is not sorted. You have to search this list M times. If you do nothing, you get a time complexity of M x N instructions being run. So the question is, can you do better? Do we need to? Many times, writing more efficient programs is definitely possible. But just as many times, it may not be necessary. It depends on the problem you're solving. Personally, I have probably written many thousands of lines of inefficient code. Mostly because not every problem needs to be broken down and analyzed for "the" best solution. Sometimes, just getting the problem solved is good enough. However! When it matters ... it \textit{really} matters. And what separates programmers from computer scientists is the knowledge that, if needed, I can find a better way. For example, lets look at two simple algorithms to find prime numbers up to \textbf{\textit{N}}. This may be an over simplified example, however, it does portray the difference between "getting the job done" and "a little mathematical knowledge can be beneficial".\\
+
+\textbf{Method 1}
+
+\begin{minted}[]{c++}
+bool isPrime(int n) {
+    for (int i = 2; i < n; ++i) {
+        if (n % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+\end{minted}
+
+Here the loop will run $n-2$ times.\\
+
+\textbf{Method 2}
+
+\begin{minted}[]{c++}
+bool isPrime(int n) {
+    for (int i = 2; i <= sqrt(n); ++i) {
+        if (n % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+\end{minted}
+
+Here the loop will run $\sqrt{N}-2$ times\\
+
+\textit{What do we Conclude?} The second method is faster... \faBomb. What a bombshell. This is obvious. But it does bring up a good point: understanding how specific algorithms work can allow you to shave instructions off of the overall cost of your code.
+
+\mysubsubsection{Calculating Time Complexity}
+
+\textbf{General Rules}\\
+
+The time taken by simple statements are considered constant time, like:
+
+\begin{itemize}
+	\tightlist
+	\item
+	      \texttt{int\ i\ =\ 0;}
+	\item
+	      \texttt{i\ =\ i\ +\ 1;}
+\end{itemize}
+
+This constant time is considered as \textbf{Big Oh of 1}, written as \textbf{O(1)} What is Big O? Its the worse case of an algorithm (more later).\\
+
+\mysubsubsection{Figuring time complexity?}
+
+We always base our "calculations" on the number of instructions run with respect to the size of the data. If some piece of code gets run that is directly effected by the number of items processed, we pay close attention to that chunk of code. Loops are a great example, but for loops are really easy to analyze since they have a definite starting and stopping point:\\
+
+\textbf{Example 1:}\\
+
+\begin{minted}[]{c++}
+for (int i = 0; i < n; ++i) {
+	cout<<i<<endl;
+}
+\end{minted}
+
+Here the loop will run $\mathbf{n\: times}$ with a Time Complexity of: $\mathbf{O(n)}$\\
+
+\textbf{Example 2:}\\
+
+Sometimes we need to "process" our data twice. A simple bubble sort (with zero improvements) is a good example of going over a set of N data elements twice.
+
+\begin{minted}[]{c++}
+void bubbleSort(int arr[], int n){  
+    int i, j;  
+    for (i = 0; i < n; i++){  
+        for (j = 0; j < n; j++){
+            if (arr[j] > arr[j+1]){
+                swap(&arr[j], &arr[j+1]);
+            }
+        }
+    }
+} 
+\end{minted}
+
+Here the loop will run $\mathbf{n^2\: times}$ with a time complexity of: $\mathbf{O(n^2)}$\\
+
+\textbf{Example 3:}\\
+
+This example we see \textbf{\textit{i}} grow exponentially which has a positive effect on the number of iterations our loop runs. It means \textbf{\textbf{i}} grows quickly and will reach \textbf{\textit{n}} in log iterations ($i=1,i=2,i=4,i=8,i=16,i=32$ , etc...).
+
+\begin{minted}[]{c++}
+for (int i = 1; i < n; i *= 2) {
+    console<<i<<endl;
+}
+\end{minted}
+
+Here the loop will run in $\mathbf{log(n-1)}$ times with a time complexity of $\mathbf{O(lg\; n)}$\\
+
+\mysubsubsection{Conclusion}
+
+There are different methods that are much more formal and rigorous when calculating complexity that we will not investigate. If we were NASA and needed triple redundancy then maybe it would matter. In general however, I cannot ever remember a time that I had to formally analyze the cost of my code (aside from grad school).  What I want you to take away from the time complexity discussion is that there are categories of algorithms 
+
+(Remember, when you see a reference to  \textbf{\textit{N}} in the context of complexity, it implies the size of our data):
+
+\begin{enumerate}
+    \item Instructions NOT related to N. These are instructions that get run, but are not based on the size of the data being processed. They are considered a trivial occurrence, and are basically ignored. Another way of saying this is: their cost is \textit{constant} as it is NOT based on the size of the data we are processing\footnote{I have issues with this to an extent. Ask me about amortized time in class as an example.}
+    \item Instructions that ARE related to N. The are generally loops or functions that must visit or process data elements that we are dealing with. Anything directly related to the "size" of our data set has a direct effect on the complexity of our code. 
+\end{enumerate}
+
+
+\mysubsection{Space Complexity}
+
+\textit{According to Wikipedia:} In computer science, the space complexity of an algorithm or a computer program is the amount of memory required to solve an instance of the computational problem as a function of the size of the input.\\
+
+\textit{In simpler words}: \gls{spacecomplex} of a program is a simple measurement of how fast the space taken by a program grows, if the input increases. 
+
+\mysubsubsection{Why should we care about space complexity?}
+
+A good algorithm keeps space complexity as low as possible. An algorithm with lower space complexity is always better than one with higher, since there is often a time-space tradeoff involved. 
+
+A case where an algorithm increases space usage with decreased time or vice versa.
+
+\hypertarget{1cb3}{\mysubsubsection{Examples}\label{1cb3}}
+
+\textbf{Method 1}
+
+\begin{minted}[]{c++}
+int fibonacci(n) {
+    vector<int> arr = {0, 1};
+    for (int i = 2; i <= n; ++i) {
+        arr.push_back(arr[i - 2] + arr[ i - 1]);
+    }
+    return arr[n - 1];
+}
+\end{minted}
+
+Here we are using an array of size n and a fixed space for iteration.
+Hence the space complexity is O(n).\\
+
+\textbf{Method 2}
+
+\begin{minted}[]{c++}
+int fibonacci(n) {
+    int x = 0, y = 1, z;
+    if (n === 0) {
+        return x;
+    }
+    if (n === 1) {
+        return y;
+    }
+    for (int i = 2; i <= n; ++i) {
+        z = x + y;
+        x = y;
+        y = z;
+    }
+    return z;
+}
+\end{minted}
+
+Here we are using a fixed space for 4 variables. Hence the space
+complexity is O(1)
+
+\hypertarget{5a92}{\mysubsubsection{Conclusion}\label{5a92}}
+
+The second method is better.
+
+There is no point in using more space to solve a problem if, we can do
+the same with lesser space complexity.
+
+
+\hypertarget{c33c}{\mysubsubsection{How to calculate space complexity}\label{c33c}}
+
+\hypertarget{ad79}{\mysubsubsubsection{General rules}\label{ad79}}
+
+The space taken by variable declaration is fixed(constant), like:
+
+\begin{itemize}
+	\tightlist
+	\item
+	      \protect\hypertarget{a1c1}{}{\texttt{let\ i\ =\ 0;}}
+\end{itemize}
+
+This space requirement is constant and is considered as \textbf{Big O}
+of 1 i.e., \textbf{O(1)}
+
+Our focus is more on the non-constant space requirement, which grows with input size.
+
+\hypertarget{845a}{\mysubsubsubsection{How to calculate space complexity?}\label{845a}}
+
+\textbf{Code 1}
+
+\begin{minted}[]{c++}
+	const arr = [];
+	for (let i = 0; i < n; ++i) {
+		arr.push(i);
+	}
+\end{minted}
+
+Here the array will take \textbf{n space}\\
+Space Complexity: \textbf{O(n)}
+
+\textbf{code 2}
+
+\begin{minted}[]{c++}
+	const arr = [];
+	for (let i = 0; i < n; ++i) {
+		for (let j = 0; j < n; ++j) {
+			arr.push(i + j);
+		}
+	}
+\end{minted}
+
+Here the array will take n² \textbf{space}\\
+Space Complexity: \textbf{O(}n²\textbf{)}
+
+\textbf{code 3}
+
+\begin{verbatim}
+const arr = [];
+for (let i = 1; i < n; i *= 2) {
+    arr.push(i);
+}
+\end{verbatim}
+
+Here the array will take (\textbf{log n)-1 space}\\
+Space Complexity: \textbf{O(log n)}
+
+\hypertarget{94f8}{\mysubsubsection{Conclusion}\label{94f8}}
+
+Similar to Time complexity, Space complexity also plays a crucial role
+in determining the efficiency of an algorithm/program.
+
+If an algorithm takes up some extra time, you can still wait for its
+execution.
+
+But, if a program takes up a lot of memory space, then due to the machine's memory limitation it will not run.
+
+\hypertarget{dc2a}{\mysubsubsection{Practice Problems}\label{dc2a}}
+
+\textbf{Problem 1}\\
+What is the time \& space complexity of the following code:
+
+\begin{minted}[]{c++}
+let a = 0, b = 0;for (let i = 0; i < n; ++i) {
+    a = a + i;
+}
+for (let j = 0; j < m; ++j) {
+    b = b + j;
+}
+\end{minted}
+
+\textbf{Problem 2}\\
+What is the time \& space complexity of the following code:
+
+\begin{minted}[]{c++}
+let a = 0, b = 0;
+for (let i = 0; i < n; ++i) {
+    for (let j = 0; j < n; ++j) {
+        a = a + j;
+    }
+}
+for (let k = 0; k < n; ++k) {
+    b = b + k;
+}
+\end{minted}
+
+\textbf{Problem 3}\\
+What is the time and space complexity of the following code:
+
+\begin{minted}[]{c++}
+let a = 0;
+for (let i = 0; i < n; ++i) {
+    for (let j = n; j > i; --j) {
+        a = a + i + j;
+    }
+}
+\end{minted}
+
+\hypertarget{40cb}{\mysubsubsection{Solutions}\label{40cb}}
+
+\textbf{Problem 1:}\\
+\textbf{Time Complexity:} O(n + m)\\
+\textbf{Space Complexity:} O(1)
+
+\textbf{Problem 2:}\\
+\textbf{Time Complexity:} O(n²)\\
+\textbf{Space Complexity:} O(1)
+
+\textbf{Problem 3:}\\
+\textbf{Time Complexity:} O(n²)\\
+\textbf{Space Complexity:} O(1)
+
+\hypertarget{5ac3}{\mysubsubsection{Practice Problems II}\label{5ac3}}
+
+\textbf{Problem 1}\\
+What is the time complexity of the following code:
+
+\begin{minted}[]{c++}
+for (let i = n; i > 0; i = parseInt(i / 2)) {
+    console.log(i);
+}
+\end{minted}
+
+\textbf{Problem 2}\\
+What is the time complexity of the following code:
+
+\begin{minted}[]{c++}
+for (let i = 1; i < n; i = i * 2) {
+    console.log(i);
+}
+\end{minted}
+
+\textbf{Problem 3}\\
+What is the time complexity of the following code:
+
+\begin{minted}[]{c++}
+for (let i = 0; i < n; ++i) {
+    for (let j = 1; j < n; j = j * 2) {
+        console.log(j);
+    }
+}
+\end{minted}
+
+\hypertarget{a637}{\subsection{Solutions}\label{a637}}
+
+\textbf{Problem 1:}\\
+\textbf{Time Complexity:} O(log n)
+
+\textbf{Problem 2:}\\
+\textbf{Time Complexity:} O(log n)
+
+\textbf{Problem 3:}\\
+\textbf{Time Complexity:} O(nlog n)
+
+{}{}{}
+
+\hypertarget{5633}{\mysubsubsection{Practice Problems III (Recursion)}\label{5633}}
+
+\textbf{Problem 1}\\
+What is the time complexity of the following code:
+
+\begin{minted}[]{c++}
+// search an element in an array
+// list is already sorted
+function search (list, item, start, end) {
+    if (start > end) {
+        return false;
+    }
+    const mid = Math.floor((start + end) / 2);
+    if (list[mid] < item) {
+        return search(list, item, mid + 1, end);
+    }
+    if (list[mid] > item) {
+        return search(list, item, start, mid - 1);
+    }
+    return true;
+}
+\end{minted}
+
+\textbf{Problem 2}\\
+What is the time complexity of the following code:
+
+\begin{minted}[]{c++}
+// count the occurrence of an element in an array
+// list is already sorted
+function count (list, item, start, end) {
+    if (start > end) {
+        return 0;
+    }
+    const mid = Math.floor((start + end) / 2);
+    if (list[mid] < item) {
+        return count(list, item, mid + 1, end);
+    }
+    if (list[mid] > item) {
+        return count(list, item, start, mid - 1);
+    }
+    return count(list, item, start, mid - 1) + 1 + count(list, item, mid + 1, end);
+}
+\end{minted}
+
+\textbf{Problem 3}\\
+What is the time complexity of the following code:
+
+\begin{minted}[]{c++}
+// Fibonacci of nth element
+function fibonacci (n) {
+    if (n <= 1) {
+        return 1;
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+\end{minted}
+
+\hypertarget{4774}{\mysubsubsection{Solutions}\label{4774}}
+
+\textbf{Problem 1:}\\
+\textbf{Time Complexity:} O(log n)
+
+\textbf{Problem 2:}\\
+\textbf{Time Complexity:} O(n)
+
+\textbf{Problem 3:}\\
+\textbf{Time Complexity:} O(2\^{}n)
+
+{}{}{}
+
+\hypertarget{9dc8}{\mysubsubsection{Asymptotic Analysis}\label{9dc8}}
+
+\hypertarget{ddc2}{\mysubsubsection{What is Asymptotic Analysis?}\label{ddc2}}
+
+According to Wikipedia,\\
+In mathematical analysis, asymptotic analysis, also known as
+asymptotics, is a method of describing limiting behavior.
+
+In simple words,\\
+Evaluation of the performance of an algorithm in terms of input size.
+How does the time/space taken by an algorithm change with the input
+size?
+
+\hypertarget{38a6}{\mysubsubsection{Cases to analyze an algorithm}\label{38a6}}
+
+\begin{itemize}
+	\tightlist
+	\item
+	      \protect\hypertarget{0bb4}{}{\textbf{Worst Case Analysis}\\
+	      	In this case, we calculate the upper bound on the running time of an
+	      	algorithm.\\
+	      	In this case, we consider such inputs so that the algorithm executes
+	      the maximum number of operations.}
+	\item
+	      \protect\hypertarget{da36}{}{\textbf{Best Case Analysis}\\
+	      	In this case, we calculate the lower bound on the running time of an
+	      	algorithm.\\
+	      	In this case, we consider such inputs so that the algorithm executes a
+	      minimum of operations.}
+	\item
+	      \protect\hypertarget{b06a}{}{\textbf{Average Case Analysis}\\
+	      	In this case, we calculate both upper \& lower bound on the running
+	      	time of an algorithm.\\
+	      	In this case, we consider all possible inputs so that the algorithm
+	      	executes an average of maximum \& minimum number of operations.}
+\end{itemize}
+
+\hypertarget{937f}{\mysubsubsection{Example}\label{937f}}
+
+\begin{minted}[]{c++}
+// linear search algorithm
+function linearSearch(list, item) {
+    for (let i = 0; i < list.length; ++i) {
+        if (list[i] == item) {
+            return true;
+        }
+    }
+    return false;
+}
+\end{minted}
+
+\hypertarget{8c7c}{\mysubsubsection{In-depth}\label{8c7c}}
+
+\textbf{For a linear search algorithm,}\\
+where N = length of array (list.length)
+
+\textbf{Worst Case:}\\
+When the element to be searched is either not present in the array or is
+present at the end of the array.\\
+\textbf{Time Complexity:} O(n)
+
+\textbf{Best Case:}\\
+When the element to be searched is present at the first location of the
+array.\\
+\textbf{Time Complexity:} O(1)
+
+\textbf{Average Case:}\\
+Average of all the cases (complexities), when the element is present at
+all the locations.\\
+\textbf{Time Complexity:} (N + (N --- 1) + (N --- 2) + \ldots{} + 1) /
+N\\
+\textbf{Time Complexity:} O(N)
+
+{}{}{}
+
+\hypertarget{89d0}{\mysubsubsection{Asymptotic Notations}\label{89d0}}
+
+\hypertarget{5c13}{\mysubsubsection{What are Asymptotic Notations?}\label{5c13}}
+
+Asymptotic notations are used to represent the complexities (time \&
+space) of algorithms for asymptotic analysis.
+
+There are three notations that are mostly used:
+
+\begin{itemize}
+	\tightlist
+	\item
+	      \textbf{Big Oh Notation (O)}
+	\item
+	      \textbf{Big Omega Notation ($\Omega$)}
+	\item
+	      \textbf{Big Theta Notation ($\Theta$}
+\end{itemize}
+
+\hypertarget{731a}{\mysubsubsection{Big Oh (O)}\label{731a}}
+
+\textbf{Big Oh Notation (O)}\\
+The Big O notation defines the upper bound of an algorithm.
+
+\textbf{Mathematically defined as:}\\
+O(g(n)) = \{ \emph{f(n): there exist positive constants c and n0 such
+	that 0 \textless= f(n) \textless= c * g(n) for all n \textgreater= n0}
+\}
+
+\textbf{Graphical Representation:}
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=3.64583in,height=3.64583in]{./Time \& Space Complexity _ Overview _ Practice Problems _ by Manish Sundriyal _ Medium_files/1_HAKjzMGo44G4gTZXMDllDg.png}
+% \caption{Graphical representation of \textbf{Big Oh Notation (O)}}
+% \end{figure}
+
+\hypertarget{745a}{\mysubsubsection{Big Omega ($\Omega$)}\label{745a}}
+
+\textbf{Big Omega Notation ($\Omega$)}\\
+The Big Omega notation defines the lower bound of an algorithm.
+
+\textbf{Mathematically defined as:}\\
+O(g(n)) = \{ \emph{f(n): there exist positive constants c and n0 such
+	that 0 \textless= c * g(n) \textless= f(n) for all n \textgreater= n0}
+\}
+
+\textbf{Graphical Representation:}
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=3.64583in,height=3.64583in]{./Time \& Space Complexity _ Overview _ Practice Problems _ by Manish Sundriyal _ Medium_files/1_lI1l1VafOAQQPp0sVLXxcw.png}
+% \caption{Graphical representation \textbf{Big Omega Notation ($\Omega$)}}
+% \end{figure}
+
+\hypertarget{5215}{\mysubsubsection{Big Theta ($\Theta$)}\label{5215}}
+
+\textbf{Big Theta Notation ($\Theta$)}
+
+The Big Theta notation defines both, upper \& lower bound of an
+algorithm.
+
+
+'''Big-Theta notation''' is a type of [[Definition:Order Notation|order notation]] for typically comparing 'run-times' or growth rates between two growth functions.
+
+Big-Theta is a stronger statement than [[Definition:Big-O Notation|big-O]] and [[Definition:Big-Omega|big-omega]].
+
+
+Suppose $f: \N \to \R, g: \N \to \R$ are two [[Definition:Mapping|functions]].
+
+Then:
+:$f \left({n}\right) \in \Theta \left({g \left({n}\right)}\right)$ 
+[[Definition:Iff|iff]]:
+:$(f \left({n}\right) \in O \left({g \left({n}\right)}\right) \land (f \left({n}\right) \in \Omega \left({g \left({n}\right)}\right)$
+where $O \left({g \left({n}\right)}\right)$ is [[Definition:Big-O Notation|big-O]] and $\Omega \left({g \left({n}\right)}\right)$ is [[Definition:Big-Omega|Big-Omega]].
+
+
+This is read as:
+: $f \left({n}\right)$ is '''big-theta''' of $g \left({n}\right)$.
+
+
+Another method of determining the condition is the following limit:
+:$\displaystyle \lim_{n \to \infty} \frac{f \left({n}\right)}{g \left({n}\right)} = c$, where $0 < c < \infty$
+
+If such a $c$ does exist, then $f \left({n}\right) \in \Theta (g \left({n}\right))$.
+
+\textbf{Graphical Representation:}
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=3.64583in,height=3.64583in]{./Time \& Space Complexity _ Overview _ Practice Problems _ by Manish Sundriyal _ Medium_files/1_tbof1FfgHaaJwBdehUFQZg.png}
+% \caption{Graphical representation of \textbf{Big Theta Notation ($\Theta$)}}
+% \end{figure}

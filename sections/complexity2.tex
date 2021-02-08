@@ -1,0 +1,610 @@
+\newpage
+\hypertarget{scary-big-o-notation}{%
+	\mysubsection{Scary Big O Notation}\label{scary-big-o-notation}}
+
+You're a computer scientist. And when you're asked to solve a problem you want to do it correctly and efficiently. You want to pick the right algorithm for the job AND you want to run as fast as possible (some times). Speed isn't always the answer, sometimes space matters, and other times it really may just be understand-ability of your solution. Its all relative. What I do know is that you will have to understand (at least to some degree) how to evaluate your own code, and its cost. It's not something you will do everyday, but a working knowledge will help. Ultimately, evaluating your own code and comparing different algorithms is essential for any computer scientist.\\
+
+So, how do we compare algorithms? We use \gls{asymptotic} (aka Big O Notation) to "classify" functions or algorithms to give us a quick understanding of the "cost" of the aforementioned algorithm.
+
+Well we typically use Big Oh, along with a few others.
+
+\begin{quote}
+	In a few words: \textbf{Big O Notation is a convenient way to express the worst-case scenario for an algorithm}
+\end{quote}
+
+Big O is the most commonly used asymptotic notation for comparing algorithms, but there are others as well.
+
+\hypertarget{related-asymptotic-notations}{%
+	\mysubsubsection{Related Asymptotic Notations}\label{related-asymptotic-notations}}
+		
+\hypertarget{big-omega-ux3c9}{%
+	\mysubsubsection{Big Omega Ω}\label{big-omega-ux3c9}}
+
+\begin{itemize}
+	\tightlist
+	\item
+	      Formal Definition:
+	      \texttt{f(n)\ is\ Ω(g(n))\ iff\ for\ some\ constants\ c\ and\ N₀,\ f(N)\ ≥\ cg(N)\ for\ all\ N\ \textgreater{}\ N₀}
+	\item
+	      It represents the \textbf{lower bound}. Therefore, It doesn't help
+	      much.
+	\item
+	      \texttt{Ω(N)} means it takes at least \texttt{N} steps.
+	\item
+	      This is a ``best case'' situation.
+\end{itemize}
+
+\hypertarget{big-theta-ux3b8}{%
+	\mysubsubsection{Big Theta Θ}\label{big-theta-ux3b8}}
+
+\begin{itemize}
+	\tightlist
+	\item
+	      \texttt{f(n)\ is\ Θ(g(n))\ iff\ f(n)\ is\ O(g(n))\ and\ f(n)\ is\ Ω(g(n))}
+	\item
+	      It represents the \textbf{lower bound} and the \textbf{upper bound} of
+	      an algorithm.
+	\item
+	      It's harder to compute (but really good).
+	\item
+	      \texttt{Θ(N)} means it takes at least \texttt{N} and at most
+	      \texttt{N} steps.
+	\item
+	      This is not directly the ``average case'' but we can figure out the
+	      average knowing the upper and lower bound.
+\end{itemize}
+
+\hypertarget{big-oh-o}{%
+	\mysubsubsection{Big Oh O}\label{big-oh-o}}
+
+\begin{itemize}
+	\tightlist
+	\item
+	      \texttt{f(n)\ is\ O(g(n))\ iff\ for\ some\ constants\ c\ and\ N₀,\ f(N)\ ≤\ cg(N)\ for\ all\ N\ \textgreater{}\ N₀}
+	\item
+	      It represents the \textbf{upper bound} of an algorithm.
+	\item
+	      Big-oh is useful because represents the worst-case behavior, which is
+	      generally what we worry about.
+	\item
+	      So, it guarantees that the program will terminate within a certain
+	      time period, it may stop earlier, but never later.
+	\item
+	      \texttt{O(N)} means it takes at most \texttt{N} steps.
+	\item
+	      This is a ``worst case'' situation.
+\end{itemize}
+
+In summary: - \texttt{big\ Ω} or the lower bound is used to analyze the \textbf{best} an algorithm performs.\\
+- \texttt{big\ Θ} is an upper AND lower bound and actually gives us the
+best overall analysis, but its harder (and not always necessary) to
+calculate. - \texttt{big\ O} or the upper bound is used to analyze the
+\textbf{worst} an algorithm will perform.
+
+\hypertarget{run-time-calculations}{%
+	\mysubsubsection{Run Time Calculations}\label{run-time-calculations}}
+
+The best most accurate way of calculating run times (or number of
+comparisons, or number of instructions run, etc.) is to actually write
+the program and run the code. This is not always feasible. So we need to
+have a rudimentary understanding of how to analyze an algorithm.
+Analysis also helps us to design more efficient algorithms.
+
+\hypertarget{starter-example}{%
+	\paragraph{Starter Example}\label{starter-example}}
+
+\hypertarget{cb1}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		int} sum (}int} n) \{}
+		int} totalSum = }0};}
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)\{}
+		        totalSum+= i;}
+		    \}}
+		\ControlFlowTok{return} totalSum;}
+		\}}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+	\tightlist
+	\item
+	      The analysis for this piece of code is pretty straight forward:
+	      
+	      \begin{itemize}
+	      	\tightlist
+	      	\item
+	      	      \textbf{Lines 1 and 4} count for one unit of time each (or a
+	      	      constant 2).
+	      	\item
+	      	      \textbf{Line 2}
+	      	      
+	      	      \begin{itemize}
+	      	      	\tightlist
+	      	      	\item
+	      	      	      \texttt{i=0} is a cost of \texttt{1}
+	      	      	\item
+	      	      	      The test is executed \texttt{N\ +\ 1} times, where the last time
+	      	      	      is when the condition is false.
+	      	      	\item
+	      	      	      The increment is executed \texttt{N} times.
+	      	      	\item
+	      	      	      So, the total cost for line 2 is \texttt{2N\ +\ 2}.
+	      	      \end{itemize}
+	      	\item
+	      	      \textbf{Line 3} counts for 2 units; one addition and one assignment,
+	      	      and it's executed \texttt{N} times, for a total of \texttt{2N}
+	      	      units.
+	      	\item
+	      	      So currently we have \textbf{2 + 2N * 2N + 2}
+	      	\item
+	      	      We can rewrite this as \textbf{4N + 4} or \textbf{O(4N + 4)} (for
+	      	      now).
+	      \end{itemize}
+	\item
+	      Since we are looking for big oh / worst case / upper bound we can
+	      start throwing terms out of our equation that have little impact on
+	      the cost. These are things like constants and low order terms.
+	\item
+	      We are going to drop the \textbf{+4} , because it's a constant.
+	\item
+	      We can also drop the \textbf{4} from the \textbf{4N} because even
+	      though its a multiplier, it has little impact on the resulting cost as
+	      N gets very large.
+	\item
+	      So we now have a cost of \textbf{O(N)}
+\end{itemize}
+
+\begin{quote}
+	Note:\\
+	I know we said that we can throw out constants. Because if ``its not
+	based on the data set size its trivial''. This is true most of the time.
+	However, if the constant is large, (like \texttt{10⁵}) it is good
+	practice to give this constant a name and to include it in the
+	asymptotic notation. So, a program counts for \texttt{10⁵\ *\ N} units
+	would have complexity of \texttt{O(K\ *\ N)}. In the above example
+	\texttt{4N} is not something big enough to earn its own constant.
+\end{quote}
+
+This was a simple example to get up and running. But, there are some
+other general rules to follow when analyzing our code.
+
+\hypertarget{general-rules}{%
+	\mysubsection{General Rules}\label{general-rules}}
+
+\hypertarget{loops}{%
+	\mysubsubsection{1. Loops}\label{loops}}
+
+The running time of the loop is at most the running time of the
+statements inside the loop (including the tests) multiplied by the
+number of iterations.
+
+The following program has complexity of O(10). (Does not depend on a
+data set, so its trivial).
+
+\hypertarget{cb2}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} }10}; i++)}
+		   k++;                      }\CommentTok{// This statement will run 10 times.}
+	\end{Highlighting}
+\end{Shaded}
+
+As an example, the following program has complexity of O(N).
+
+\hypertarget{cb3}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)}
+		   k++;                      }\CommentTok{// This statement will run N times.}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{nested-loops}{%
+	\mysubsubsection{2. Nested Loops}\label{nested-loops}}
+
+The total running time of the nested loops is the running time of each
+loop multiplied together.
+
+The total running time of a statement inside a group of nested loops is
+the running time of that statement multiplied by the product of the
+sizes of all the loops.
+
+As an example, the following program has complexity of O(N²).
+
+\hypertarget{cb4}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)}
+		        k++;                   }\CommentTok{// This statement will run N\^{}2 times.}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{consecutive-statements}{%
+	\mysubsubsection{3. Consecutive Statements}\label{consecutive-statements}}
+
+When there are consecutive statements, we count the statement with
+maximum complexity.
+
+As an example, the following program which has O(N), followed by O(N²),
+has complexity of O(N²).
+
+\hypertarget{cb5}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)\{        }\CommentTok{// O(N)}
+		   k++;}
+		\}}
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)\{        }\CommentTok{// O(N\^{}2)}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)\{}
+		        k++;                  }
+		    \}}
+		\} }
+	\end{Highlighting}
+\end{Shaded}
+
+Also:
+
+\hypertarget{cb6}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)\{        }\CommentTok{// O(N)}
+		    k++;}
+		\}}
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)\{        }\CommentTok{// O(N)}
+		    k++;}
+		\} }
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)\{        }\CommentTok{// O(N)}
+		    k++;                  }
+		\}}
+		
+		\CommentTok{// All together = O(3N) or simply O(N)}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{if-else}{%
+	\mysubsubsection{4. If-Else}\label{if-else}}
+
+The running time is never more than the running time of the test(s) plus
+the running time of the block with maximum complexity.
+
+\hypertarget{cb7}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{if} (condition)}
+		\CommentTok{//block 1}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)\{        }\CommentTok{// O(N)}
+		        k++;                  }
+		    \}}
+		\ControlFlowTok{else} \ControlFlowTok{if} (condition)}
+		\CommentTok{//block 2}
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)\{        }\CommentTok{// O(N\^{}2)}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)\{}
+		            k++;                  }
+		        \}}
+		    \} }
+		\ControlFlowTok{else}
+		\CommentTok{//block 3}
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)\{        }\CommentTok{// O(N\^{}3)}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)\{}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)\{}
+		                k++;                  }
+		            \}                  }
+		        \}}
+		    \} }
+		
+		\CommentTok{// OR: O(N\^{}3) worst case}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{simple-statements}{%
+	\mysubsubsection{5. Simple Statements}\label{simple-statements}}
+
+Return statements, initialize a variable, increment , assigning,
+\ldots etc. All of these operations counted in \textbf{O(1)}.
+
+\hypertarget{big-o-pitfalls}{%
+	\mysubsection{Big O Pitfalls}\label{big-o-pitfalls}}
+
+Since Big O Notation tells us about the upper bound of an algorithm
+ignoring constants and low-order terms. An algorithm may have exact
+number of steps in the worst case more or less than the Big O notation.
+
+\hypertarget{exact-cost-big-o}{%
+	\mysubsubsection{Exact Cost \textgreater{} Big O}\label{exact-cost-big-o}}
+
+This algorithm has a \emph{O(N)} upper bound. However we loop 5*N number
+of times, beyond the supposed upper bound.
+
+\hypertarget{cb8}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}(i = }0}; i \textless{} }5}*n; i++ )}
+		    k++;}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{exact-cost-big-o-1}{%
+	\mysubsubsection{Exact Cost \textless{} Big O}\label{exact-cost-big-o-1}}
+
+If we have a loop that executes \texttt{N\ =\ 10⁹} iterations, it gets a
+complexity of \texttt{O(N)}. However we KNOW that it almost never goes
+beyond \texttt{10⁷} number of iterations! Doesn't matter, its still
+\texttt{O(N)}.
+
+\hypertarget{cb9}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}(i = }0}; i \textless{} n; i++ )}
+		\ControlFlowTok{if}(arr[i] == goal) }\ControlFlowTok{break};}
+	\end{Highlighting}
+\end{Shaded}
+
+A more common example, when the number of loops are decreasing by the
+time. So, first time it will loop
+\texttt{N,\ N-1,\ N-2,\ \ldots{}\ ,\ till\ 1}. The Big O notation for
+the following code is still \texttt{O(N³)}, while the exact number of
+steps is much less than that.
+
+\hypertarget{cb10}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for} (}int} i = }0}; i \textless{} n; ++i)    }
+		\ControlFlowTok{for} (}int} j = i; j \textless{} n; ++j) }
+		\ControlFlowTok{for} (}int} k = j; k \textless{} n; ++k)}
+		            count++;}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{common-time-complexities}{%
+	\mysubsection{Common Time Complexities}\label{common-time-complexities}}
+
+When speaking about the time/memory complexity of an algorithm, instead
+of using the formal notation, we may simply state the class of an
+algorithm.
+
+Here are some classes of the common time complexities.
+
+\begin{longtable}[]{@{}c@{}}
+	\toprule                                                                                                                                                           
+	\endhead                                                                                                                                                           
+	\includegraphics[width=5.20833in,height=\textheight]{https://cs.msutexas.edu/~griffin/zcloud/zcloud-files/comparison_between_complexities_2020.png}\tabularnewline 
+	Common Complexities\tabularnewline                                                                                                                                 
+	\bottomrule                                                                                                                                                        
+\end{longtable}
+
+\mysubsubsection{Constant --- O(1)}
+
+The algorithm does a
+\href{https://en.wikipedia.org/wiki/Time_complexity\#Constant_time}{constant} number of operations independent on the input.
+
+% start = 6;
+% int end = 100;
+% int mid = (end — start) / 2;
+% if(mid %2 == 0)
+%     mid--;
+
+\hypertarget{linear-on}{%
+	\mysubsubsection{Linear--- O(N)}\label{linear-on}}
+
+The running time of the algorithm increases linearly with the size of
+the input.
+
+\hypertarget{cb12}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}(i = }0}; i \textless{} n; i++ )}
+		    k++;}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{logarithmic-olog-n}{%
+	\mysubsubsection{Logarithmic--- O(Log N)}\label{logarithmic-olog-n}}
+
+The running time of the algorithm is decreased by some factor with each
+step. A very simple example of this type is an algorithm that keeps
+dividing the input by two. A
+\href{https://en.wikipedia.org/wiki/Binary_search_algorithm}{binary
+search} algorithm follows the same rule.
+
+\hypertarget{cb13}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{while}(n \textgreater{} }0})\{}
+		   n /= }2};}
+		\}}
+	\end{Highlighting}
+\end{Shaded}
+
+\begin{quote}
+	The logarithm is base 2, that is, Log\textsubscript{2} N.
+\end{quote}
+
+\hypertarget{linearithmic-on-log-n}{%
+	\mysubsubsection{Linearithmic--- O(N Log N)}\label{linearithmic-on-log-n}}
+
+The running time of the algorithm is as a result of performing a
+logarithmic operation \emph{N} times.
+
+For example, inserting \emph{N} number of nodes inside a binary search
+tree. Each insertion takes O(Log N) time, while the entire algorithm
+takes linearithmic time.
+
+Also, the average case of
+\href{https://en.wikipedia.org/wiki/Quicksort}{quick sort}
+,\href{https://en.wikipedia.org/wiki/Heapsort}{heap sort} , and
+\href{https://en.wikipedia.org/wiki/Merge_sort}{merge sort} takes O(N
+Log N) time.
+
+\hypertarget{cb14}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		int} arr[n] = [}1},}6},}3}];}
+		\ControlFlowTok{for} (}int} i = }0}; i \textless{} n; ++i)\{}
+		    binarySearchTree.insert(arr[i]);}
+		\}}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{square-root-osqrtn}{%
+	\mysubsubsection{Square Root --- O(sqrt(N))}\label{square-root-osqrtn}}
+
+The running time of the algorithm is decreased by the square root of the
+size of the input. As an example, you could check if a number is a prime
+or not by just looping till it's square root.
+
+\hypertarget{cb15}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		bool} isPrime(}int} n) \{}
+		\ControlFlowTok{if} (n == }2})  }
+		\ControlFlowTok{return} \KeywordTok{true};  }
+		\ControlFlowTok{if} (n \textless{} }2})  }
+		\ControlFlowTok{return} \KeywordTok{false};}
+		\ControlFlowTok{for} (}int} i = }2}; i \textless{}= sqrt(n); i ++)  }
+		\ControlFlowTok{if} (n \% i == }0}) }\ControlFlowTok{return} \KeywordTok{false};  }
+		\ControlFlowTok{return} \KeywordTok{true};}
+		\}}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{quadratic-onuxb2}{%
+	\mysubsubsection{Quadratic --- O(N²)}\label{quadratic-onuxb2}}
+
+The running time of the algorithm is as a result of performing a linear
+operation \emph{N} times; So, it's \emph{N} multiplied by \emph{N}. A
+common sorting algorithms like
+\href{https://en.wikipedia.org/wiki/Bubble_sort}{bubblesort} ,
+\href{https://en.wikipedia.org/wiki/Selection_sort}{selectionsort} and
+\href{https://en.wikipedia.org/wiki/Insertion_sort}{insertionsort} takes
+\texttt{O(N²)}.
+
+\hypertarget{cb16}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)}
+		        k++;}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{cubic-onuxb3}{%
+	\mysubsubsection{Cubic--- O(N³)}\label{cubic-onuxb3}}
+
+The running time of the algorithm is as a result of performing a linear
+operation N² times; So, it's N multiplied by N, multiplied by N.
+
+\hypertarget{cb17}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for} (}int} i = }0}; i \textless{} n; ++i)}
+		\ControlFlowTok{for} (}int} j = }0}; j \textless{} n; ++j)}
+		\ControlFlowTok{for} (}int} k = }0}; k \textless{} n; ++k)}
+		            cunt++;}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{polynomial-onc}{%
+	\mysubsubsection{\texorpdfstring{Polynomial ---
+		O(N\textsuperscript{c})}{Polynomial --- O(Nc)}}\label{polynomial-onc}}
+
+The running time of the algorithm is as a result of performing a linear
+operation N\textsuperscript{(c-1)} times, for some constant \texttt{c},
+where \texttt{c\ \textgreater{}\ 1}.
+
+In other words, The running time of the algorithm is a simple
+\href{https://en.wikipedia.org/wiki/Polynomial}{polynomial} function of
+the size of the input.
+
+\begin{quote}
+	Since polynomial has complexity of O(N\textsuperscript{c}), where c
+	\textgreater{} 1. Therefore, O(N²) is also a polynomial time.
+\end{quote}
+
+\hypertarget{cb18}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\ControlFlowTok{for}( }int} i = }0}; i \textless{} n; i++)}
+		\ControlFlowTok{for}( }int} j = }0}; j \textless{} n; j++)}
+		        k++;}
+	\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{exponential-ocn}{%
+	\mysubsubsection{\texorpdfstring{Exponential ---
+		O(c\textsuperscript{N})}{Exponential --- O(cN)}}\label{exponential-ocn}}
+
+Printing every possible combination of a numerical password of size N =
+O(10\textsuperscript{N}). The key here is ``numerical'' (0-9) or 10
+digits. Thats where the 10 in 10\textsuperscript{N} comes from. That why
+passwords want you to mix digits , uppercase , lowercase, and special
+characters.
+
+Here is a decent article about the 8 queens problem which has a brute
+force O(N\textsuperscript{N}) solution. There are other much faster
+solutions, but this is a decent example:
+\href{https://medium.com/@jmohon1986/timeout-the-story-of-n-queens-time-complexity-c80636d92f8b}{8
+queens}. NOT mandatory reading.
+
+\hypertarget{factorial-on}{%
+	\mysubsubsection{Factorial--- O(N!)}\label{factorial-on}}
+
+The running time of the algorithm is factorial of N. It's common in
+generating permutations. The complexity would be the summation of N!/K!,
+where k = 0\ldots N; O(N!/0! + N!/1! + \ldots. + 1), which is O(N!).
+
+\hypertarget{cb19}{}
+\begin{Shaded}
+	\begin{Highlighting}[]
+		\AttributeTok{const} int} n = }3};}
+		int} arr[n] = [}1}, }2}, }5}], cur[n];}
+		bool} vis[n];}void} permutation(}int} i) \{}
+		\ControlFlowTok{if} (i == n)\{}
+		        print(cur);}
+		\ControlFlowTok{return};}
+		    \}}
+		    
+		\ControlFlowTok{for} (}int} j = }0}; j \textless{} n; ++j)\{}
+		\ControlFlowTok{if} (!vis[j])\{}
+		            vis[j] = }1};}
+		            cur[i] = num[j];}
+		        
+		            permutation(i + }1});}
+		            vis[j] = }0};}
+		        \}}
+		    \}}
+		\}}\CommentTok{// This will print}
+		\CommentTok{// \{1,2,5\}, \{1,5,2\}, \{2,1,5\}, \{2,5,1\}, \{5,1,2\}, \{5,2,1\}}
+	\end{Highlighting}
+\end{Shaded}
+
+Or take a look at the
+\href{https://en.wikipedia.org/wiki/Travelling_salesman_problem}{traveling
+salesman}. That wikipedia article shows just how studied some of these
+algorithms can get. The brute force solution is O(N!), with LOTS of
+other approaches with improvements. Not mandatory, but check it out.
+
+\hypertarget{p-and-np}{%
+	\mysubsection{P and NP}\label{p-and-np}}
+
+So, prove P == NP and become famous and win money. What is P vs NP? The
+P = ``Polynomial'' and the NP = ``Non Polynomial'' which are two broad
+classification of algorithms. Most all of the algorithms we discuss in
+class are of the ``P'' or polynomial class of algorithm (N
+N\textsuperscript{2}, even N\textsuperscript{3}, \ldots). This means
+they can be solved in polynomial time. Non Polynomial or NP are
+algorithms that cannot be solved in polynomial time (N! or
+C\textsuperscript{N}). This
+\href{https://en.wikipedia.org/wiki/P_versus_NP_problem}{article} on
+wikipedia discusses P vs NP in detail.
+
+Some food for thought: Contemporary public key encryption is safe
+assuming that prime number factorization cannot be solved in polynomial
+time. If someone can show that a Non Polynomial time algorithm can be
+solved in Polynomial time (the factorization of large primes for
+example) \ldots{} then all of our encryption keys have just become
+worthless. So \ldots{} sometimes its ok for algorithms to be hard!
+
+\textsubscript{(Then comes quantum computers \ldots{} and then the
+	singularity \ldots{} were all doomed)}

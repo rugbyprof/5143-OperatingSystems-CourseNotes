@@ -1,0 +1,196 @@
+\newpage
+\mysection{Static Keyword}
+\label{sec:static-keyword}
+
+
+Static Keyword can be used with following,
+
+\begin{itemize}
+    \item Static variable in functions
+    \item Static Class Objects
+    \item Static member Variable in class
+    \item Static Methods in class
+\end{itemize}
+
+\mysubsection{Static Variables inside Functions}
+
+\begin{itemize}
+\tightlist
+    \item Static variables when used inside function are initialized only once, and then they hold there value even through function calls.
+    \item These static variables are stored on static storage area , not in stack.
+\end{itemize}
+
+\begin{minted}[]{c++}
+void counter(){
+    static int count=0;
+    cout << count++;
+}
+
+int main({
+    for(int i=0;i<5;i++){
+        counter();
+    }
+}
+\end{minted}
+
+\textbf{Output:}
+\begin{minted}[bgcolor=bg]{text}
+0 1 2 3 4
+\end{minted}
+
+
+Let's see the same program's output without using static variable.
+
+\begin{minted}[]{c++}
+void counter(){
+    int count=0;
+    cout << count++;
+}
+
+int main({
+    for(int i=0;i<5;i++){
+        counter();
+    }
+}
+\end{minted}
+
+\textbf{Output:}
+\begin{minted}[bgcolor=bg]{text}
+0 0 0 0 0
+\end{minted}
+
+\begin{itemize}
+\tightlist
+    \item If we do not use \btic{static} keyword, the variable \btic{count}, is reinitialized every time when \btic{counter()} function is called, and gets destroyed each time when \btic{counter()} functions ends.
+    \item But, if we make it \btic{static}, once initialized count will have a scope till the end of main() function and it will carry its value through function calls too.
+    \item If you don't initialize a static variable, they are by default initialized to zero.
+\end{itemize}
+
+\mysubsection{Static Class Objects}
+
+\begin{itemize}
+\tightlist
+    \item Static keyword works in the same way for class objects too.
+    \item Objects declared static are allocated storage in static storage area, and have scope till the end of program.
+    \item Static objects are also initialized using constructors like other normal objects.
+    \item Assignment to zero, on using static keyword is only for primitive datatypes, not for user defined datatypes.
+\end{itemize}
+ 
+\begin{minted}[]{c++}
+class Abc{
+    int i;
+    public:
+    Abc(){
+        i=0;
+        cout << "constructor";
+    }
+    ~Abc(){
+        cout << "destructor";
+    }
+};
+
+void f(){
+    cout<<"In f()"<<endl;
+    static Abc obj;
+    cout<<"Exiting f()"<<endl;
+}
+
+int main(){
+    int x=0;
+    if(x==0){
+        f();
+    }
+    cout << "END";
+}
+\end{minted}
+
+\textbf{Output:}
+\begin{minted}[bgcolor=bg]{text}
+Start main
+Start f()
+constructor
+End f()
+End main
+destructor
+\end{minted}
+
+You must be thinking, why was the \btic{destructor} not called upon the end of the scope of if condition, where the reference of object \btic{obj} should get destroyed. This is because object was \btic{static}, which has scope till the program's lifetime, hence destructor for this object was called when main() function exits.
+
+\mysubsection{Static Data Member in Class}
+
+\begin{itemize}
+\tightlist
+    \item \btic{Static} data members of class are those members which are shared by all the objects.
+    \item They are allocated a single piece of storage which is the same in every object.
+    \itm So, every object has its own copy of all data members \textbf{except static members} which they share with all other objects.
+    \item \btic{Static} member variables (data members) are not initialized using a constructor, because these are not dependent on object initialization.
+    \item Also, \btic{static members must be initialized explicitly}, always outside the class. If not initialized, Linker will give error.
+\end{itemize}
+
+\begin{minted}[]{c++}
+class Foo
+{
+    public:
+    static int i;
+    Foo()
+    {
+        // construtor
+        cout<<i<<endl;
+    };
+};
+
+int Foo::i=1;
+
+int main()
+{
+    Foo obj;
+    cout << obj.i;   // prints value of i
+}
+\end{minted}
+
+\textbf{Output:}
+\begin{minted}[bgcolor=bg]{text}
+1
+\end{minted}
+
+Once the definition for static data member is made, user cannot redefine it. Though, arithmetic operations can be performed on it.
+
+\mysubsection{Static Member Functions}
+
+\begin{itemize}
+\tightlist
+    \item These functions work for the class as whole rather than for a particular object of a class.
+    \item It can be called using an object and the direct member access \btic{.} operator.
+    \item However, its more typical to call a static member function by itself, using class name and scope resolution \btic{::} operator.
+    \item Functions declared as static, cannot access ordinary data members and member functions, only other statically declared items within the class. 
+\end{itemize}
+
+For example:
+
+class Math{
+private:
+    static int curve;
+public:
+    static int add(int a, int b){
+        return a + b;
+    }
+    static int sub(int a, int b){
+        return a - b;
+    }
+    static int mul(int a, int b){
+        return a * b;
+    }
+};
+
+int main(){
+    cout<<Math::add(2,3)<<endl;
+    cout<<Math::sub(2,3)<<endl;
+    cout<<Math::mul(2,3)<<endl;
+}
+
+\textbf{Output:}
+\begin{minted}[bgcolor=bg]{text}
+5
+-1
+6
+\end{minted}
